@@ -6,7 +6,7 @@
 #
 
 def number_of_running_processes(cwd, counter=0)
-  pids = %x[/usr/bin/cat #{cwd}/tmp/pids/*].split("\n") rescue []
+  pids = %x[/usr/bin/cat #{cwd}/tmp/pids/delayed_job*].split("\n") rescue []
   pids.each do |pid|
     counter+=1 if %x[/usr/bin/ps #{pid}].include?(pid.to_s)
     
