@@ -1,0 +1,46 @@
+#!/usr/bin/bash
+
+PROGNAME=`/usr/bin/basename $0`
+
+print_usage() {
+    echo "Usage: $PROGNAME -w warning -c critical"
+    echo "Usage: $PROGNAME -h"
+}
+
+if [ $# -lt 1 ]; then
+    print_usage
+    exit 1
+fi
+
+while test -n "$1"; do
+    case "$1" in
+        -h)
+            print_help
+            exit 1
+            ;;
+        -w)
+            warning=$2
+            shift
+            ;;
+        -c)
+            critical=$2
+            shift
+            ;;
+    esac
+    shift
+done
+
+warning=${warning:-2}
+critical=${critical:-10}
+
+mails=$(/usr/bin/ls -l /var/spool/nullmailer/queue/ | /opt/local/bin/grep -v total | /usr/bin/wc -l)
+if [ $mails -ge $warning ]; then
+  echo "WARNING mails= $mails"
+  exit 1
+elif [ $mails -ge $critical ]; then
+  echo "CRITICAL mails= $mails"
+  exit 1
+else
+  echo "OK mails= $mails"
+  exit 0
+fi
