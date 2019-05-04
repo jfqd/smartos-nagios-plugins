@@ -1,0 +1,46 @@
+#!/usr/bin/bash
+
+PROGNAME=`/usr/bin/basename $0`
+
+print_usage() {
+    echo "Usage: $PROGNAME -w warning -c critical"
+    echo "Usage: $PROGNAME -h"
+}
+
+if [ $# -lt 1 ]; then
+    print_usage
+    exit 1
+fi
+
+while test -n "$1"; do
+    case "$1" in
+        -h)
+            print_help
+            exit 1
+            ;;
+        -w)
+            warning=$2
+            shift
+            ;;
+        -c)
+            critical=$2
+            shift
+            ;;
+    esac
+    shift
+done
+
+warning=${warning:-0}
+critical=${critical:-0}
+
+_ps=$(/usr/bin/ps auxwww | /opt/local/bin/grep 'sidekiq' | /opt/local/bin/grep -v 'grep' | /opt/local/bin/grep -v 'check_sidekiq' | /usr/bin/wc -l)
+if [ $_ps -le $warning ]; then
+  echo "WARNING ps= $_ps"
+  exit 1
+elif [ $_ps -le $critical ]; then
+  echo "CRITICAL ps= $_ps"
+  exit 1
+else
+  echo "OK ps= $_ps"
+  exit 0
+fi
