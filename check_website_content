@@ -9,7 +9,7 @@
 
 
 START=$(date +%s.%N)
-RESULT=$(/usr/bin/wget --no-check-certificate -O - "$1" 2>&1 | /usr/bin/grep "$2")
+RESULT=$(/opt/local/bin/curl -k "$1" 2>&1 | /usr/bin/grep "$2")
 END=$(date +%s.%N)
 DIFF=$( /usr/bin/echo "$END - $START" | /usr/bin/bc )
 INT=$( /usr/bin/echo "$DIFF" | /usr/bin/awk '{printf "%.0f",$1}' )
